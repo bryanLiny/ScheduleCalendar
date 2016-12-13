@@ -279,6 +279,7 @@
 
 			if (dateTime.length && dateTime != "") {
 				// 处理ios时间格式中'-'无法识别的问题
+				// 正则 g-全局匹配 m-多行匹配(这里可不加)
 				dateTime = dateTime.replace(new RegExp("-", "gm"), "/");
 				currentDate = new Date(dateTime);
 			} else {
@@ -289,10 +290,8 @@
 
 		// 获取星期
 		getDayStr: function(dateStr) {
-			// alert(dateStr);
 			var currentDate = new Date(dateStr);
 			var day = currentDate.getDay();
-			// alert(day);
 			var daystr = "";
 			switch (day) {
 				case 1:
@@ -316,6 +315,8 @@
 				case 0:
 					daystr = "<th>星期天</th>";
 					break;
+				default:
+					daystr = "<th>未定义</th>";
 			}
 			return daystr;
 		},
@@ -334,13 +335,13 @@
 		// 为载入界面完成后初始化当天行程数据或者第一天数据
 		getInitCurrentDateEventList: function() {
 			var $active = $(".lyc-body>.body td.active").eq(0),
-				$span = $(".lyc-body>.body td").eq(0),
+				$firstTd = $(".lyc-body>.body td").eq(0),
 				eventDate;
 			if ($active.length) {
 				eventDate = $active.data('date');
 			} else {
-				$span.addClass('active').siblings('span').removeClass('active');
-				eventDate = $span.data('date');
+				$firstTd.addClass('active').siblings('td').removeClass('active');
+				eventDate = $firstTd.data('date');
 			}
 			this.getEventList(eventDate);
 		},
@@ -382,11 +383,11 @@
 		},
 
 		// 获取日期td,填充表格
-		getTdsStr: function(dateTime) {
+		getTdsStr: function(dateTimes) {
 			var tdstr = "";
 			var currentDate = this.getCurrentDate("");
 			var curDateTime = currentDate.getFullYear() + "/" + (currentDate.getMonth() + 1) + "/" + currentDate.getDate();
-			$.each(dateTime, function(index, el) {
+			$.each(dateTimes, function(index, el) {
 				var elDateTime = el.year + "/" + el.month + "/" + el.date;
 				if (el.diffFlag) { // 非本月
 					tdstr += "<td style='cursor:pointer;' data-date='" + el.year + "-" + el.month + "-" + el.date + "' class='diff-month animated zoomIn'>" + el.date + "</td>";
@@ -474,8 +475,8 @@
 
 		// 前进或后退、以及touch的事件处理
 		reInitCalendar: function(value) {
-			var $span = $(".lyc-body>.body td").eq(3),
-				date = $span.data('date');
+			var $td = $(".lyc-body>.body td").eq(3),//以界面上显示的日期，从左到右顺序，第四天为前后分界点
+				date = $td.data('date');
 			var thisDate = this.getCurrentDate(date),
 				y = thisDate.getFullYear(),
 				m = thisDate.getMonth() + 1,
@@ -484,7 +485,7 @@
 			var MaxTotalNumOfMonth = dataObj.totalNum,
 				lastMonthTotalNum = dataObj.lastMonthTotalNum;
 
-			if (d + value <= 0) { //前五天
+			if (d + value <= 0) { //前七天
 				d = lastMonthTotalNum + d + value;
 				if (m - 1 == 0) {
 					m = 12;
@@ -494,7 +495,7 @@
 				}
 			} else if (d + value > MaxTotalNumOfMonth) {
 				d = d + value - MaxTotalNumOfMonth;
-				if (m + 1 > 12) { //后五天
+				if (m + 1 > 12) { //后七天
 					m = 1;
 					y = y + 1;
 				} else {
