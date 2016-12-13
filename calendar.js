@@ -585,7 +585,6 @@
 		});
 
 		// 为document绑定touch事件
-		// var calendarTable = document.getElementById("calendar_table");
 		document.addEventListener('touchstart', scheCalendar.touchSatrtFunc, false);
 		// document.addEventListener('touchmove', scheCalendar.touchMoveFunc, false);
 		document.addEventListener('touchend', function(evt) {
