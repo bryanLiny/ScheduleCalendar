@@ -540,7 +540,7 @@
 		},
 
 		//移动端touchend事件  
-		touchEndFunc: function(evt, fncall) {
+		touchEndFunc: function(evt, handler) {
 			try {
 				var touch = evt.changedTouches[0]; //获取最后一次手指离开屏幕是的坐标  
 				var x = Number(touch.pageX); //页面触点X坐标  
@@ -549,9 +549,9 @@
 				var dvalue = Math.abs(x - _startX);
 				if (dvalue != 0 && dvalue > 100) {
 					if (x - _startX > 0) { // 右滑
-						fncall.apply(this, [-7]);
+						handler.apply(this, [-7]);
 					} else { // 左滑
-						fncall.apply(this, [7]);
+						handler.apply(this, [7]);
 					}
 				}
 				// _hasMoved = false;
